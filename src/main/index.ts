@@ -5,7 +5,7 @@ import { setup_global_event } from "../preload/setup_global_event";
 import { setup_window_event } from "../preload/setup_window_event";
 
 import icon from '../../resources/icon.png?asset'
-import appIcon from '../../resources/app-store.png?asset'
+// import appIcon from '../../resources/app-store.png?asset'
 
 function createWindow(): void {
   // Create the browser window.
@@ -47,7 +47,7 @@ function createWindow(): void {
   }
 
 
-  const tray = new Tray(nativeImage.createFromPath(appIcon)); 
+  const tray = new Tray(nativeImage.createFromPath(icon)); 
   const contextMenu = Menu.buildFromTemplate([
     { label: 'show app', click: () => { if (mainWindow) mainWindow.show(); } },
     { label: 'exit', click: () => app.quit() }
