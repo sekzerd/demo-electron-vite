@@ -1,4 +1,4 @@
-import { contextBridge ,ipcRenderer} from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
@@ -13,28 +13,28 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('api', api)
 
     contextBridge.exposeInMainWorld("ipcRenderer", {
-    on(...args: Parameters<typeof ipcRenderer.on>) {
+      on(...args: Parameters<typeof ipcRenderer.on>) {
         const [channel, listener] = args;
         return ipcRenderer.on(channel, (event, ...args) =>
-            listener(event, ...args)
+          listener(event, ...args)
         );
-    },
-    off(...args: Parameters<typeof ipcRenderer.off>) {
+      },
+      off(...args: Parameters<typeof ipcRenderer.off>) {
         const [channel, ...omit] = args;
         return ipcRenderer.off(channel, ...omit);
-    },
-    send(...args: Parameters<typeof ipcRenderer.send>) {
+      },
+      send(...args: Parameters<typeof ipcRenderer.send>) {
         const [channel, ...omit] = args;
         return ipcRenderer.send(channel, ...omit);
-    },
-    invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
+      },
+      invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
         const [channel, ...omit] = args;
         return ipcRenderer.invoke(channel, ...omit);
-    },
-    // windows_operate: (info: { event: string; data: {} }) => {
-    //     ipcRenderer.send("windows_operate", info);
-    // },
-});
+      },
+      // windows_operate: (info: { event: string; data: {} }) => {
+      //     ipcRenderer.send("windows_operate", info);
+      // },
+    });
   } catch (error) {
     console.error(error)
   }

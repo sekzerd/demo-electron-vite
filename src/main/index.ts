@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain ,Tray,Menu,nativeImage } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Tray, Menu, nativeImage } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { setup_global_event } from "../preload/setup_global_event";
@@ -7,20 +7,22 @@ import { setup_window_event } from "../preload/setup_window_event";
 import icon from '../../resources/icon.png?asset'
 // import appIcon from '../../resources/app-store.png?asset'
 
+let mainWindow: BrowserWindow | null = null;
+
 function createWindow(): void {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 1200,
     minHeight: 800,
     backgroundColor: "#ffffff",
-    show: false,     
+    show: false,
     frame: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      devTools:true,
+      devTools: true,
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
     }
@@ -30,7 +32,7 @@ function createWindow(): void {
   setup_global_event(ipcMain);
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow?.show()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -46,8 +48,7 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-
-  const tray = new Tray(nativeImage.createFromPath(icon)); 
+  const tray = new Tray(nativeImage.createFromPath(icon));
   const contextMenu = Menu.buildFromTemplate([
     { label: 'show app', click: () => { if (mainWindow) mainWindow.show(); } },
     { label: 'exit', click: () => app.quit() }
@@ -75,6 +76,11 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
+
+  const gotTheLock = app.requestSingleInstanceLock();
+  if (!gotTheLock) {
+    app.quit();
+  }
 
   createWindow()
 
