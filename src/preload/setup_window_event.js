@@ -7,23 +7,23 @@ function setup_window_event(ipcMain, win) {
     ipcMain.on("app:windows_drag_start", (data) => {
         win.unmaximize();
         win.setSize(1200, 800);
-        console.log("windows_drag_start");
+        // console.log("windows_drag_start");
         moveable_window.start();
     });
 
     ipcMain.on("app:windows_drag_end", (data) => {
         moveable_window.end();
-        console.log("windows_drag_end");
+        // console.log("windows_drag_end");
     });
 
     ipcMain.on("app:minimize", (data) => {
         win.minimize();
-        console.log("minimize");
+        // console.log("minimize");
     });
     
     ipcMain.on("app:hide", (data) => {
         win.hide();
-        console.log("hide");
+        // console.log("hide");
     });
     
     ipcMain.on("app:cropsquare", (data) => {

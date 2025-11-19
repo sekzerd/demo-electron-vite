@@ -31,6 +31,40 @@ function createWindow(): void {
 
   setup_global_event(ipcMain);
 
+  mainWindow.webContents.session.on('select-hid-device', (event, details, callback) => {
+    // Add events to handle devices being added or removed before the callback on
+    // `select-hid-device` is called.
+    // console.log("event:", event)
+    // mainWindow?.webContents.session.on('hid-device-added', (_event, device) => {
+    // console.log('hid-device-added FIRED WITH', device)
+    // Optionally update details.deviceList
+    // details.deviceList.push(device);
+    // })
+
+    // mainWindow?.webContents.session.on('hid-device-removed', (_event, device) => {
+    // console.log('hid-device-removed FIRED WITH', device)
+    // Optionally update details.deviceList
+    // })
+    // event.preventDefault()
+    // if (details.deviceList && details.deviceList.length > 0) {
+    // callback(details.deviceList[0].deviceId)
+    // }
+  })
+
+  mainWindow.webContents.session.setPermissionCheckHandler((_webContents, permission, _requestingOrigin, details) => {
+    // if (permission === 'hid' && details.securityOrigin === 'file:///') {
+    return true
+    // }
+    // return false
+  })
+
+  mainWindow.webContents.session.setDevicePermissionHandler((details) => {
+    // if (details.deviceType === 'hid' && details.origin === 'file://') {
+    return true
+    // }
+    // return false
+  })
+
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show()
   })
