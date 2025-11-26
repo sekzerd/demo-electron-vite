@@ -23,6 +23,7 @@ async function invokeFun(): Promise<void> {
 
 function requestHidDevice(): void {
   console.log('requesting hid device')
+  // @ts-ignore
   navigator.hid.requestDevice({ filters: [] }).then((devices) => {
     console.log('devices:', devices)
   }).catch((err) => {
@@ -31,13 +32,18 @@ function requestHidDevice(): void {
 }
 
 function getDevices(): void {
+  // @ts-ignore
   navigator.hid.getDevices().then((devices) => {
     console.log('getDevices:', devices)
   }).catch((err) => {
     console.error('hid getDevices error:', err)
   })
 }
-
+async function invokeKoffi(): Promise<void> {
+  console.log('invoking koffi test')
+  const ret = await window.electron.ipcRenderer.invoke('test-koffi', 1, 2)
+  console.log('koffi test invoked, ret:', ret)
+}
 </script>
 
 <template>
@@ -64,6 +70,8 @@ function getDevices(): void {
       </button> <button class="btn bg-blue-500 m-2  rounded text-white" @click="getDevices">
         get hid devices
       </button>
+      <button class="btn bg-blue-500 m-2  rounded text-white" @click="invokeKoffi">
+        dll</button>
     </div>
   </div>
 

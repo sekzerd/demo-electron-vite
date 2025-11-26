@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: demo-electron-vite
+appId: com.bolutek.xear.app
+productName: bolutek-xear
 directories:
   buildResources: build
 files:
@@ -11,8 +11,13 @@ files:
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
   - resources/**
+extraResources:
+  - from: build/extraResources
+    to: extraResources
+    filter:
+      - '**/*'
 win:
-  executableName: demo-electron-vite
+  executableName: bolutek-xear
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
@@ -40,6 +45,6 @@ appImage:
 npmRebuild: false
 publish:
   provider: generic
-  url: https://example.com/auto-updates
+  url: https://update.bolutek.nibite.net/auto-updates
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
