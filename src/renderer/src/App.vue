@@ -11,7 +11,7 @@ function ipcHandle(): void {
 }
 
 function closeApp(): void {
-  window.electron.ipcRenderer.send('app:close')
+  window.electron.ipcRenderer.send('win:close')
 }
 
 async function invokeFun(): Promise<void> {

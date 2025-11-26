@@ -1,21 +1,18 @@
 <script setup lang="ts">
 function on_minimize() {
-    window.ipcRenderer.send("app:minimize", {});
+    window.ipcRenderer.send("win:minimize", {});
 }
 function on_cropsquare() {
-    window.ipcRenderer.send("app:cropsquare", {});
+    window.ipcRenderer.send("win:cropsquare", {});
 }
 function on_close() {
-    // window.ipcRenderer.send("app:close", {});
-    window.ipcRenderer.send("app:hide", {});
-
+    window.ipcRenderer.send("win:hide", {});
 }
 function on_mouse_down() {
-    window.ipcRenderer.send("app:windows_drag_start", {});
-
+    window.ipcRenderer.send("win:drag_start", {});
 }
 function on_mouse_up() {
-    window.ipcRenderer.send("app:windows_drag_end", {});
+    window.ipcRenderer.send("win:drag_end", {});
 }
 </script>
 

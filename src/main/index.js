@@ -1,11 +1,25 @@
 import { app, shell, BrowserWindow, ipcMain, Tray, Menu, nativeImage } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { setup_global_event } from "../preload/setup_global_event";
-import { setup_window_event } from "../preload/setup_window_event";
-
+import { event_global } from "./event/event_global";
+import { event_window } from "./event/event_window";
 import icon from '../../resources/icon.png?asset'
 
+// 应用启动事件
+app.whenReady().then(() => {
+  electronApp.setAppUserModelId('com.electron')
+  app.on('browser-window-created', (_, window) => {
+    optimizer.watchWindowShortcuts(window)
+  })
+  const gotTheLock = app.requestSingleInstanceLock();
+  if (!gotTheLock) {
+    app.quit();
+  }
+  createWindow()
+  app.on('activate', function () { if (BrowserWindow.getAllWindows().length === 0) createWindow() })
+})
+
+// 创建主窗口
 let mainWindow = null;
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -24,22 +38,14 @@ function createWindow() {
       sandbox: false
     }
   })
-  setup_window_event(ipcMain, mainWindow);
-  setup_global_event(ipcMain, app);
+  event_window(ipcMain, mainWindow);
+  event_global(ipcMain, app);
 
   mainWindow.webContents.session.on('select-hid-device', (event, details, callback) => { })
-
-  mainWindow.webContents.session.setPermissionCheckHandler((_webContents, permission, _requestingOrigin, details) => {
-    return true
-  })
-
-  mainWindow.webContents.session.setDevicePermissionHandler((details) => {
-    return true
-  })
+  mainWindow.webContents.session.setPermissionCheckHandler((_webContents, permission, _requestingOrigin, details) => { return true })
+  mainWindow.webContents.session.setDevicePermissionHandler((details) => { return true })
   mainWindow.webContents.openDevTools();
-  mainWindow.on('ready-to-show', () => {
-    mainWindow?.show()
-  })
+  mainWindow.on('ready-to-show', () => { mainWindow?.show() })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
@@ -51,39 +57,18 @@ function createWindow() {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
-
+  // 托盘图标和菜单
   const tray = new Tray(nativeImage.createFromPath(icon));
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'show app', click: () => { if (mainWindow) mainWindow.show(); } },
+    { label: 'app', click: () => { if (mainWindow) mainWindow.show(); } },
     { label: 'exit', click: () => app.quit() }
   ]);
-  tray.on('click', () => {
-    if (mainWindow) mainWindow.show();
-  });
-  tray.setToolTip('my app');
+  tray.on('click', () => { if (mainWindow) mainWindow.show(); });
+  tray.setToolTip('app');
   tray.setContextMenu(contextMenu);
 }
 
-app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.electron')
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
-  })
-
-  ipcMain.on('ping', () => console.log('pong'))
-
-  const gotTheLock = app.requestSingleInstanceLock();
-  if (!gotTheLock) {
-    app.quit();
-  }
-
-  createWindow()
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-
-})
-
+// 所有窗口关闭事件
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
