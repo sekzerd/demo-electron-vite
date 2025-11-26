@@ -27,6 +27,8 @@
     "@tailwindcss/vite": "^4.1.17",
     "electron-updater": "^6.3.9",
     "koffi": "^2.14.1",
+    "pinia": "^3.0.4",
+    "pinia-plugin-persistedstate": "^4.7.1",
     "tailwindcss": "^4.1.17"
   },
   "devDependencies": {

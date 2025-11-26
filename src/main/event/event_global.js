@@ -17,7 +17,7 @@ function testKoffi(a, b, app) {
     let ret = myadd(a, b);
     return ret;
 }
-
+import fs from 'fs';
 function event_global(ipcMain, app) {
     ipcMain.handle("app:invoke_add", (event, data) => {
         console.log("invoke_add receive:", data);
@@ -29,6 +29,22 @@ function event_global(ipcMain, app) {
         console.log('a=', a, 'b=', b);
         const ret = testKoffi(a, b, app);
         return Promise.resolve(ret);
+    });
+    ipcMain.handle("app:fs:writeFileSync", (event, path, data) => {
+        try {
+            fs.writeFileSync(path, data);
+            return Promise.resolve(null);
+        } catch (e) {
+            return Promise.resolve(e);
+        }
+    });
+    ipcMain.handle("app:fs:readFileSync", (event, path, data) => {
+        try {
+            const data = fs.readFileSync(path, 'utf8');
+            return Promise.resolve(data);
+        } catch (e) {
+            return Promise.resolve(e);
+        }
     });
 }
 
